@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Olie Admin</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<!-- Header -->
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <a class="navbar-brand" href="#">Olie</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>    
+    </ul>
+  </div>  
+</nav>
+
+<!-- Middel Container -->
+<div class="container-fluid" style="margin-top:30px">
+  <div class="row">
+  
+    <!-- Left Part -->
+    <div class="col-sm-2">
+      <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Email On Phone </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Install Ms</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Setup Cisco Jabber</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#">Disabled</a>
+        </li>
+      </ul>
+      <hr class="d-sm-none">
+    </div>
+
+    <!-- Right Part -->
+    <div class="col-sm-10">
+
+      <form action="">
+        <input type="hidden" class="total_level" id="total_level" value="1" name="total_level" > <!-- default value is 1-->
+        
+        <div class="tab-content" id="level_1" data-level="1">
+          <!-- level 1 -->  
+          <label for="level_1">Level 1</label>
+          <div class="form-group" id="level_1_div">
+            <!-- Text -->
+            <textarea class="form-control col-sm-12" id="level_1_text" data-level="1" rows="2" name="level[1][text]" placeholder="Enter Phrase..."></textarea>
+
+            <!-- Options Text/ Button-->
+            <div class="form-group" >
+              <input type="hidden" class="float-left total_options" id="level_1_total_options" value="0" data-level="1" name="level[1][total_options]" >
+              <input type="text form-control" class="col-sm-6 float-left option_text" id="level_1_option_text" data-level="1" placeholder="Create new option... " style="height: 39px;"  >
+              <a class="btn btn-outline-secondary col-sm-2 float-left option_add" id="level_1_option_add" data-level="1" style="margin-left: 10px;" >ADD Option</a>
+            </div>
+            <br />
+
+            <!-- Options -->
+            <div class="form-group" id="level_1_options_div" >
+              <ul class="nav nav-tabs" id="level_1_options_ul" data-level="1">
+              </ul> 
+            </div>
+          </div>          
+        </div>
+      </form>
+      </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="jumbotron text-center" style="margin-bottom:0">
+  <p>Footer</p>
+</div>
+<script>
+  $( document ).ready(function() {
+    String.prototype.toInt = function () {
+      return parseInt(this, 10);
+    }
+
+    $('.option_add').click(function(){
+      var total_level = $('#total_level').val().toInt(),
+          level = $(this).attr('data-level').toInt(),
+          option_text = $('#level_'+level+'_option_text').val(),
+          total_options = $('#level_'+level+'_total_options').val().toInt(),
+          current_option = total_options + 1;
+
+      var active = (total_options == 0)?'active':''; //for checking tab active 
+
+      /******** Options ul and li ********/
+      // add option from option text 
+      var option_html = '';
+          option_html += '<li class="nav-item">';
+          option_html += '<a class="nav-link '+active+'" data-level="'+level+'" href="#tab-'+level+'-'+current_option+'" data-toggle="tab" >'+option_text+'</a>';
+          option_html += '</li>';
+      $('#level_'+level+'_options_ul').append(option_html);
+      $('#level_'+level+'_option_text').val('');   // clear the text box value when option is add
+      $('#level_'+level+'_total_options').val(current_option); // update option value if new option is added
+
+      
+      /******** Create new Options Div or create new level if nexr level not exist  ********/
+      var next_level = level+1;
+      // Check next level is exixt or not
+      if($('#level_'+next_level).length == 0){
+        var level_html = '';
+            level_html += '<div class="tab-content" id="level_'+next_level+'" data-level="'+next_level+'">';
+            level_html += '<!-- level '+next_level+' -->  ';
+            level_html += '<label for="level_'+next_level+'">Level '+next_level+'</label>';
+            level_html += '<div class="form-group" id="level_'+next_level+'_div"></div>';
+            level_html += '</div><br />';
+        $('#level_'+level).append(level_html);
+        $('#total_level').val(next_level); // update lavel value if new lavel is added
+      }
+      
+
+    });
+  });
+</script>
+</body>
+</html>
