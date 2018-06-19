@@ -56,35 +56,35 @@
     </div>
 
     <!-- Right Part -->
+    <!-- Right Part -->
     <div class="col-sm-10">
+      <form action="php_file.php" method="POST">
+        <div class="tab-content" id="conversation_1" data-level="1" data-conversation-level="1" >
+          <!-- Conversation -->
+          <label >Conversation 1</label>
+          <input type="hidden" class="float-left option_text" id="conversation_1_option_text" data-level="1" name="conversation[1][option_text]" />
+          <!-- Conversation Text/ Add New Options Button-->
+          <div class="form-group conversation_1_text_div" data-level="1" >
+              <!-- Conversation Text -->
+              <textarea class="form-control col-sm-12" id="conversation_1_text" data-level="1" rows="2" name="conversation[1][text]" placeholder="Enter Phrase..."></textarea>
 
-      <form action="">
-        <input type="hidden" class="total_level" id="total_level" value="1" name="total_level" > <!-- default value is 1-->
-        
-        <div class="tab-content" id="level_1" data-level="1">
-          <!-- level 1 -->  
-          <label for="level_1">Level 1</label>
-          <div class="form-group" id="level_1_div">
-            <!-- Text -->
-            <textarea class="form-control col-sm-12" id="level_1_text" data-level="1" rows="2" name="level[1][text]" placeholder="Enter Phrase..."></textarea>
-
-            <!-- Options Text/ Button-->
-            <div class="form-group" >
-              <input type="hidden" class="float-left total_options" id="level_1_total_options" value="0" data-level="1" name="level[1][total_options]" >
-              <input type="text form-control" class="col-sm-6 float-left option_text" id="level_1_option_text" data-level="1" placeholder="Create new option... " style="height: 39px;"  >
-              <a class="btn btn-outline-secondary col-sm-2 float-left option_add" id="level_1_option_add" data-level="1" style="margin-left: 10px;" >ADD Option</a>
-            </div>
-            <br />
-
-            <!-- Options -->
-            <div class="form-group" id="level_1_options_div" >
-              <ul class="nav nav-tabs" id="level_1_options_ul" data-level="1">
-              </ul> 
-            </div>
-          </div>          
+              <!-- Options Text/ Button-->
+              <div class="form-group" >
+                  <input type="hidden" class="float-left total_options" id="conversation_1_total_options" data-level="1" name="conversation[1][total_options]" value="0" />
+                  <input type="text form-control" class="col-sm-6 float-left add_option_text" id="conversation_1_add_option_text" data-level="1" placeholder="Enter option name... " style="height: 39px;" />
+                  <a class="btn btn-outline-secondary col-sm-2 float-left option_add_btn" id="conversation_1_option_add_btn" data-level="1" style="margin-left: 10px;" >ADD Option</a>
+              </div>
+          </div>
+          <br />
+          <!-- Options -->
+          <div class="form-group" id="conversation_1_options" data-level="1" >
+              <ul class="nav nav-tabs" id="conversation_1_options_ul" data-level="1"></ul> 
+              <br />
+          </div>
         </div>
+        <button value="submit"></button>
       </form>
-      </div>
+    </div>
   </div>
 </div>
 
@@ -95,44 +95,82 @@
 <script>
   $( document ).ready(function() {
     String.prototype.toInt = function () {
-      return parseInt(this, 10);
+      return  parseInt(this, 10);
     }
 
-    $('.option_add').click(function(){
-      var total_level = $('#total_level').val().toInt(),
-          level = $(this).attr('data-level').toInt(),
-          option_text = $('#level_'+level+'_option_text').val(),
-          total_options = $('#level_'+level+'_total_options').val().toInt(),
-          current_option = total_options + 1;
+    $(document).on('click', "a.option_add_btn", function() {
+      
+      var level = $(this).attr('data-level'),
+          splited_level = $(this).attr('data-level').split("_"),
+          last_level = 1,
+          level_path = 'conversation',
+          add_option_text = $('#conversation_'+level+'_add_option_text').val(),
+          total_options = $('#conversation_'+level+'_total_options').val().toInt(),
+          current_option = total_options + 1,
+          conversation_counter = 1;
+
+      splited_level.forEach(function(element) {
+        last_level = element.toInt();
+        level_path += '['+last_level+'][options]';
+        conversation_counter++;
+      });
+      level_path += '['+current_option+']';
+
 
       var active = (total_options == 0)?'active':''; //for checking tab active 
+
+      if(add_option_text == ''){
+        return false;
+      }
 
       /******** Options ul and li ********/
       // add option from option text 
       var option_html = '';
           option_html += '<li class="nav-item">';
-          option_html += '<a class="nav-link '+active+'" data-level="'+level+'" href="#tab-'+level+'-'+current_option+'" data-toggle="tab" >'+option_text+'</a>';
+          option_html += '<a class="nav-link '+active+'" data-level="'+level+'" href="#conversation_'+level+'_'+current_option+'" data-toggle="tab" >'+add_option_text+'</a>';
           option_html += '</li>';
-      $('#level_'+level+'_options_ul').append(option_html);
-      $('#level_'+level+'_option_text').val('');   // clear the text box value when option is add
-      $('#level_'+level+'_total_options').val(current_option); // update option value if new option is added
+      $('#conversation_'+level+'_options_ul').append(option_html);
+      $('#conversation_'+level+'_add_option_text').val('');   // clear the text box value when option is add
+      $('#conversation_'+level+'_total_options').val(current_option); // update option value if new option is added
 
       
-      /******** Create new Options Div or create new level if nexr level not exist  ********/
-      var next_level = level+1;
+      /******** Create new Options Div or create new Conversation level if nexr level not exist  ********/
+      var next_level = conversation_counter;
+
       // Check next level is exixt or not
-      if($('#level_'+next_level).length == 0){
+      if($('#conversation_'+level+'_options_div').length == 0){
         var level_html = '';
-            level_html += '<div class="tab-content" id="level_'+next_level+'" data-level="'+next_level+'">';
-            level_html += '<!-- level '+next_level+' -->  ';
-            level_html += '<label for="level_'+next_level+'">Level '+next_level+'</label>';
-            level_html += '<div class="form-group" id="level_'+next_level+'_div"></div>';
+            level_html += '<div class="tab-content" id="conversation_'+level+'_options_div" data-level="'+level+'" data-conversation-level="'+conversation_counter+'" >';
+            level_html += '<!-- Conversation -->';
+            level_html += '<label >Conversation '+conversation_counter+' </label>';
             level_html += '</div><br />';
-        $('#level_'+level).append(level_html);
-        $('#total_level').val(next_level); // update lavel value if new lavel is added
+        $('#conversation_'+level+'_options').append(level_html);
       }
-      
 
+      /******* Next Level Convertation *******/ 
+      var conversation_level = level+ '_'+ current_option;
+      var conversation_html = '';
+          conversation_html = '<div class="tab-pane '+active+'" id="conversation_'+conversation_level+'" data-level="'+conversation_level+'">';
+          conversation_html += '<input type="hidden" class="float-left option_text" id="conversation_'+conversation_level+'_option_text" data-level="'+conversation_level+'" name="'+level_path+'[option_text]" value="'+add_option_text+'" />';
+          conversation_html += '<!-- Conversation Text/ Add New Options Button-->';
+          conversation_html += '<div class="form-group conversation_'+conversation_level+'_text_div" data-level="'+conversation_level+'" >';
+          conversation_html += '<!-- Conversation Text -->';
+          conversation_html += '<textarea class="form-control col-sm-12" id="conversation_'+conversation_level+'_text" data-level="'+conversation_level+'" rows="2" name="'+level_path+'[text]" placeholder="Enter Phrase..."></textarea>'
+          conversation_html += '<!-- Options Text/ Button-->';
+          conversation_html += '<div class="form-group" >';
+          conversation_html += '<input type="hidden" class="float-left total_options" id="conversation_'+conversation_level+'_total_options" data-level="'+conversation_level+'" name="'+level_path+'[total_options]" value="0" />';
+          conversation_html += '<input type="text form-control" class="col-sm-6 float-left add_option_text" id="conversation_'+conversation_level+'_add_option_text" data-level="'+conversation_level+'" placeholder="Enter option name... " style="height: 39px;" />';
+          conversation_html += '<a class="btn btn-outline-secondary col-sm-2 float-left option_add_btn" id="conversation_'+conversation_level+'_option_add_btn" data-level="'+conversation_level+'" style="margin-left: 10px;" >ADD Option</a>';
+          conversation_html += '</div>';
+          conversation_html += '</div>';
+          conversation_html += '<br />';
+          conversation_html += '<!-- Options -->';
+          conversation_html += '<div class="form-group" id="conversation_'+conversation_level+'_options" data-level="'+conversation_level+'" >';
+          conversation_html += '<ul class="nav nav-tabs" id="conversation_'+conversation_level+'_options_ul" data-level="'+conversation_level+'"></ul> ';
+          conversation_html += '<br />';
+          conversation_html += '</div>';
+          conversation_html += '</div>';
+      $('#conversation_'+level+'_options_div').append(conversation_html);
     });
   });
 </script>
